@@ -13,7 +13,7 @@ Binaries are in ```Bin``` folder
 ```
 
 ### How it works: 
-At first, Server sends payload to client, then recieve packet payload client
+At first, Server sends payload to client, then recieve payload from client
 Server:
 ```
 -----------SERVER-----------
