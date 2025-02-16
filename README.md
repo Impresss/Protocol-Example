@@ -4,4 +4,4 @@
 ```
 bash build.sh
 ```
-###Binaries are in ```Bin``` folder
+Binaries are in ```Bin``` folder
