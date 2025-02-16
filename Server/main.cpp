@@ -8,8 +8,14 @@
 
 #include "ocp_protocol.h"
 
-int main()
+void usage()
 {
+    std::cout << "Usage: ./Server <port> <code> <userId> <command>" << std::endl;
+}
+
+int main(int argc, char *argv[])
+{
+    if (argc < 5) { usage(); return -1; }
     std::cout << "-----------SERVER-----------" << std::endl;
     OCP req;
     OCP res;
@@ -26,11 +32,11 @@ int main()
     {
         std::cerr << "socket()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
 
+    memset(&servAddrInfo, 0, sizeof(servAddrInfo));
     servAddrInfo.sin_addr.s_addr = htonl(INADDR_ANY);
-    servAddrInfo.sin_port = htons(65000);
+    servAddrInfo.sin_port = htons(atoi(argv[1]));
     servAddrInfo.sin_family = AF_INET;
 
     eCode = bind(sd, (sockaddr*)&servAddrInfo, sizeof(servAddrInfo));
@@ -38,7 +44,6 @@ int main()
     {
         std::cerr << "bind()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
 
     listen(sd, 3);
@@ -49,12 +54,12 @@ int main()
     {
         std::cerr << "accept()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
 
-    req.code = 1;
-    req.userId = 0;
-    req.command = 'a';
+    req.code = atoi(argv[2]);
+    req.userId = atoi(argv[3]);
+    req.command = *argv[4];
+
     memset(&buffer, 0, sizeof(buffer));
     serialize(req, buffer, sizeof(buffer));
     eCode = send(nsd, buffer, sizeof(buffer), 0);
@@ -62,7 +67,6 @@ int main()
     {
         std::cerr << "send()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
 
     memset(&buffer, 0, sizeof(buffer));
@@ -71,7 +75,6 @@ int main()
     {
         std::cerr << "recv()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
     deserialize(res, buffer, sizeof(buffer));
 

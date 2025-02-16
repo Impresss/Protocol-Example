@@ -8,8 +8,14 @@
 
 #include "ocp_protocol.h"
 
-int main()
+void usage()
 {
+    std::cout << "Usage: ./Client <server port> <code> <userId> <command>" << std::endl;
+}
+
+int main(int argc, char *argv[])
+{
+    if (argc < 5) { usage(); return -1; }
     std::cout << "-----------CLIENT-----------" << std::endl;
     OCP req;
     OCP res;
@@ -26,11 +32,10 @@ int main()
     {
         std::cerr << "socket()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
 
     inet_pton(AF_INET, "127.0.0.1", &servAddrInfo.sin_addr.s_addr);
-    servAddrInfo.sin_port = htons(65000);
+    servAddrInfo.sin_port = htons(atoi(argv[1]));
     servAddrInfo.sin_family = AF_INET;
 
     eCode = connect(sd, (sockaddr*)&servAddrInfo, sizeof(servAddrInfo));
@@ -38,7 +43,6 @@ int main()
     {
         std::cerr << "connect()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
 
     memset(&buffer, 0, sizeof(buffer));
@@ -47,7 +51,6 @@ int main()
     {
         std::cerr << "recv()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
     deserialize(res, buffer, sizeof(buffer));
     std::cout << "In char array: ";
@@ -63,9 +66,10 @@ int main()
     std::cout << "UserId: " << res.userId << std::endl;
     std::cout << "Command: " << res.command << std::endl;
 
-    req.code = 2;
-    req.userId = 1;
-    req.command = 'b';
+    req.code = atoi(argv[2]);
+    req.userId = atoi(argv[3]);
+    req.command = *argv[4];
+
     memset(&buffer, 0, sizeof(buffer));
     serialize(req, buffer, sizeof(buffer));
     eCode = send(sd, buffer, sizeof(buffer), 0);
@@ -73,7 +77,6 @@ int main()
     {
         std::cerr << "send()" << std::endl;
         return -1;
-        exit(EXIT_FAILURE);
     }
 
     close(sd);
