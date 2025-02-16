@@ -2,4 +2,5 @@
 Bin/
 Client/build/
 Server/build/
-
+Server/CMakeLists.txt.user
+Client/CMakeLists.txt.user 
